@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <string.h>
+
+double calculateResistance(char* color1, char* color2, char* color3, char* color4, char* color5, char* color6, int bandNumber) 
+
+   {
+    char* colors[] = {"b", "br", "r", "o", "y", "g", "bl", "v", "gr", "w", "gl", "s"};
+    int multipliers[] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000, 0.1, 0.01};
+    float tolerances[] = {20, 1, 2, 0.05, 0.02, 0.5, 0.25, 0.1, 0.01, 0, 5, 10};
+    
+    float tempCoef[] = {250, 100, 50, 15, 25, 20, 10, 5, 1};
+    
+    int digit1 = -1, digit2 = -1, digit3 = -1, multiplierIndex = -1, toleranceIndex = -1, tempCoefIndex = -1;
+    
+    for (int i = 0; i < 12; i++) {
+        if (strcmp(color1, colors[i]) == 0) digit1 = i;
+        if (strcmp(color2, colors[i]) == 0) digit2 = i;
+        if (strcmp(color3, colors[i]) == 0) digit3 = i;
+        if (strcmp(color4, colors[i]) == 0) multiplierIndex = i;
+        if (strcmp(color5, colors[i]) == 0) toleranceIndex = i;
+        if (strcmp(color6, colors[i]) == 0) tempCoefIndex = i;
+    }
+    
+    if (bandNumber == 3) {
+        toleranceIndex = 0;
+    }
+    
+    double resistance = 0;
+    if(bandNumber==3||bandNumber==4) {
+       resistance= (digit1*10+digit2)*multipliers[multiplierIndex];
+    } else if (bandNumber==5||bandNumber==6){
+    resistance = (digit1 * 100 + digit2 * 10 + digit3) * multipliers[multiplierIndex];
+    }
+    
+    double tolerance = tolerances[toleranceIndex];
+    double MaximumResistance= resistance+tolerance;
+    double MinimumResistance= resistance-tolerance;
+    
+    printf("\nResistance Value:\t%.2lf ohms\n", resistance);
+    printf("Maximum value:\t\t%.4lf ohms\n", MaximumResistance);
+    printf("Minimum value:\t\t%.4lf ohms\n", MinimumResistance);
+    printf("\nTolerance:\t\t+/-%.2lf%%\n", tolerance);
+    
+    if (bandNumber == 6) {
+        printf("\nTemperature\nCoefficient:\t\t+/-%.2lf ppm/°C\n", tempCoef[tempCoefIndex]);
+    } else {
+        printf("\nTemperature\nCoefficient:\t\tNot specified\n");
+    }
+    
+    return resistance;
+   }
+
+
+int main()
+   {
+    int bandNumber;
+    char color1[10], color2[10], color3[10], color4[10], color5[10], color6[10];
+    
+    printf("Enter the band number (3, 4, 5, or 6): ");
+    scanf("%d", &bandNumber);
+    
+    if (bandNumber < 3 || bandNumber > 6) {
+        printf("Invalid band number. Please enter 3, 4, 5 or 6.\n");
+        return 1; 
+    }
+    
+    printf("Enter the color bands for band %d [b br r o y g bl v gr w gl s]:\n\n", bandNumber);
+    
+    switch (bandNumber) {
+        case 3:
+            scanf(" %s %s %s", color1, color2, color4);
+            calculateResistance(color1, color2, "w", color4, "w", "w", bandNumber);
+            break;
+        case 4:
+            scanf(" %s %s %s %s", color1, color2, color4, color5);
+            calculateResistance(color1, color2, "w", color4, color5, "w", bandNumber);
+            break;
+        case 5:
+            scanf(" %s %s %s %s %s", color1, color2, color3, color4, color5);
+            calculateResistance(color1, color2, color3, color4, color5, "w", bandNumber);
+            break;
+        case 6:
+            scanf(" %s %s %s %s %s %s", color1, color2, color3, color4, color5, color6);
+            calculateResistance(color1, color2, color3, color4, color5, color6, bandNumber);
+            break;
+    }
+    
+    return 0;
+   }
+
+
+
